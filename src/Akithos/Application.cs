@@ -7,14 +7,12 @@ namespace Akithos;
 
 public abstract class Application
 {
-    private readonly ImGuiRenderer m_imGuiRenderer;
+    private readonly ImGuiController m_imGuiController;
     private readonly GraphicsDevice m_graphicsDevice;
     private readonly ApplicationOptions m_applicationOptions;
 
     public Application()
     {
-        m_applicationOptions = new ApplicationOptions(this);
-        
         var windowCreateInfo = new WindowCreateInfo
         {
             WindowWidth = 1920,
@@ -33,10 +31,10 @@ public abstract class Application
             SyncToVerticalBlank = true
         };
         m_graphicsDevice = VeldridStartup.CreateGraphicsDevice(MainWindow, options);
+
+        m_imGuiController = new ImGuiController(m_graphicsDevice);
         
-        m_imGuiRenderer = new ImGuiRenderer(m_graphicsDevice, m_graphicsDevice.SwapchainFramebuffer.OutputDescription, 1920, 1080);
-        
-        InitializeImGui();
+        m_applicationOptions = new ApplicationOptions(this, m_imGuiController);
     }
 
     public Sdl2Window MainWindow { get; }
@@ -44,6 +42,8 @@ public abstract class Application
     internal void Run()
     {
         Configure(m_applicationOptions);
+        
+        m_imGuiController.Initialize();
         
         var commandList = m_graphicsDevice.ResourceFactory.CreateCommandList();
 
@@ -56,7 +56,7 @@ public abstract class Application
                 break;
             }
             
-            m_imGuiRenderer.Update(1f / 60f, input);
+            m_imGuiController.Update(1f / 60f, input);
 
             OnDrawGUI();
             
@@ -71,30 +71,20 @@ public abstract class Application
             commandList.Begin();
             commandList.SetFramebuffer(m_graphicsDevice.SwapchainFramebuffer);
             commandList.ClearColorTarget(0, RgbaFloat.Black);
-            m_imGuiRenderer.Render(m_graphicsDevice, commandList);
+            m_imGuiController.Render(m_graphicsDevice, commandList);
             commandList.End();
             m_graphicsDevice.SubmitCommands(commandList);
             m_graphicsDevice.SwapBuffers(m_graphicsDevice.MainSwapchain);
-            
-            
         }
+        
+        m_imGuiController.Dispose();
+        commandList.Dispose();
+        m_graphicsDevice.Dispose();
     }
 
     protected abstract void Configure(ApplicationOptions options);
 
     protected abstract void OnDrawGUI();
-
-    private void InitializeImGui()
-    {
-        var io = ImGui.GetIO();
-        io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
-        io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
-
-        //io.Fonts.AddFontFromFileTTF("Resources/Fonts/Rubik/static/Rubik-Regular.ttf", 17);
-        //io.Fonts.AddFontFromFileTTF("Resources/Fonts/Rubik/static/Rubik-ExtraBold.ttf", 17);
-
-        m_imGuiRenderer.RecreateFontDeviceTexture();
-    }
 
     private void BindWindowEvents()
     {
@@ -103,7 +93,7 @@ public abstract class Application
 
     private void MainWindow_OnResized()
     {
-        m_imGuiRenderer.WindowResized(MainWindow.Width, MainWindow.Height);
+        m_imGuiController.ResizeViewport(MainWindow.Width, MainWindow.Height);
         m_graphicsDevice.ResizeMainWindow((uint)MainWindow.Width, (uint)MainWindow.Height);
     }
 }
