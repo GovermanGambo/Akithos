@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="ImGui.NET" Version="1.89.5.1" />
+      <PackageReference Include="ImGui.NET.Branches.Docking" Version="1.88.0" />
+      <PackageReference Include="Veldrid" Version="4.9.0" />
+      <PackageReference Include="Veldrid.ImageSharp" Version="4.9.0" />
+      <PackageReference Include="Veldrid.ImGui" Version="5.72.0" />
+      <PackageReference Include="Veldrid.SPIRV" Version="1.0.15" />
+      <PackageReference Include="Veldrid.StartupUtilities" Version="4.9.0" />
+    </ItemGroup>
+
+</Project>
