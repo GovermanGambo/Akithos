@@ -1,6 +1,6 @@
 ﻿namespace Akithos;
 
-public class ImGuiOptions
+public sealed class ImGuiOptions
 {
     private readonly ImGuiController m_imGuiController;
 

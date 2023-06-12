@@ -1,6 +1,6 @@
 ﻿namespace Akithos;
 
-public class AppBuilder
+public sealed class AppBuilder
 {
     private readonly Func<Application> m_appFactory;
     

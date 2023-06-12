@@ -3,7 +3,7 @@ using Veldrid;
 
 namespace Akithos;
 
-internal class ImGuiController : IDisposable
+internal sealed class ImGuiController : IDisposable
 {
     private readonly ImGuiRenderer m_imGuiRenderer;
 

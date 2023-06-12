@@ -10,7 +10,7 @@ public abstract class Application
     private readonly ImGuiController m_imGuiController;
     private readonly ApplicationOptions m_applicationOptions;
 
-    public Application()
+    protected Application()
     {
         var windowCreateInfo = new WindowCreateInfo
         {

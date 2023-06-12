@@ -1,6 +1,6 @@
 ﻿namespace Akithos;
 
-public class ApplicationOptions
+public sealed class ApplicationOptions
 {
     private readonly Application m_application;
     private readonly ImGuiController m_imGuiController;
