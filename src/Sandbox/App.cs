@@ -21,7 +21,7 @@ public class App : Application
 
     protected override void OnDrawGUI()
     {
-        GUI.BeginDockSpace(true);
+        GUI.BeginDockSpace("DockSpace", true);
 
         ImGui.ShowDemoWindow();
         
