@@ -8,7 +8,6 @@ namespace Akithos;
 public abstract class Application
 {
     private readonly ImGuiController m_imGuiController;
-    private readonly GraphicsDevice m_graphicsDevice;
     private readonly ApplicationOptions m_applicationOptions;
 
     public Application()
@@ -30,22 +29,23 @@ public abstract class Application
             ResourceBindingModel = ResourceBindingModel.Improved,
             SyncToVerticalBlank = true
         };
-        m_graphicsDevice = VeldridStartup.CreateGraphicsDevice(MainWindow, options);
+        GraphicsDevice = VeldridStartup.CreateGraphicsDevice(MainWindow, options);
 
-        m_imGuiController = new ImGuiController(m_graphicsDevice);
+        m_imGuiController = new ImGuiController(GraphicsDevice);
         
         m_applicationOptions = new ApplicationOptions(this, m_imGuiController);
     }
 
     public Sdl2Window MainWindow { get; }
-    
+    public GraphicsDevice GraphicsDevice { get; }
+
     internal void Run()
     {
         Configure(m_applicationOptions);
         
         m_imGuiController.Initialize();
         
-        var commandList = m_graphicsDevice.ResourceFactory.CreateCommandList();
+        var commandList = GraphicsDevice.ResourceFactory.CreateCommandList();
 
         while (MainWindow.Exists)
         {
@@ -69,17 +69,17 @@ public abstract class Application
             }
 
             commandList.Begin();
-            commandList.SetFramebuffer(m_graphicsDevice.SwapchainFramebuffer);
+            commandList.SetFramebuffer(GraphicsDevice.SwapchainFramebuffer);
             commandList.ClearColorTarget(0, RgbaFloat.Black);
-            m_imGuiController.Render(m_graphicsDevice, commandList);
+            m_imGuiController.Render(GraphicsDevice, commandList);
             commandList.End();
-            m_graphicsDevice.SubmitCommands(commandList);
-            m_graphicsDevice.SwapBuffers(m_graphicsDevice.MainSwapchain);
+            GraphicsDevice.SubmitCommands(commandList);
+            GraphicsDevice.SwapBuffers(GraphicsDevice.MainSwapchain);
         }
         
         m_imGuiController.Dispose();
         commandList.Dispose();
-        m_graphicsDevice.Dispose();
+        GraphicsDevice.Dispose();
     }
 
     protected abstract void Configure(ApplicationOptions options);
@@ -94,6 +94,6 @@ public abstract class Application
     private void MainWindow_OnResized()
     {
         m_imGuiController.ResizeViewport(MainWindow.Width, MainWindow.Height);
-        m_graphicsDevice.ResizeMainWindow((uint)MainWindow.Width, (uint)MainWindow.Height);
+        GraphicsDevice.ResizeMainWindow((uint)MainWindow.Width, (uint)MainWindow.Height);
     }
 }
